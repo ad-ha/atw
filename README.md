@@ -1,6 +1,7 @@
 # Advanced Trading Wallet for Home Assistant
-
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://github.com/hacs/integration)
+
+![logo-512](https://github.com/user-attachments/assets/489dda3f-d008-490b-88fe-331af026ad27)
 
 Track your stock and cryptocurrency portfolio directly in Home Assistant. The Advanced Trading Wallet integration allows you to monitor your investments, view real-time data, and perform virtual buy/sell transactions, all within your smart home ecosystem.
 
