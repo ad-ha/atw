@@ -1,0 +1,26 @@
+{
+    "domain": "advanced_trading_wallet",
+    "name": "Advanced Trading Wallet",
+    "codeowners": ["@ad-ha"],
+    "config_flow": true,
+    "dependencies": [],
+    "documentation": "https://github.com/ad-ha/atw",
+    "iot_class": "cloud_polling",
+    "issue_tracker": "https://github.com/ad-ha/atw/issues",
+    "requirements": [],
+    "resources": [
+      {
+        "type": "module",
+        "url": "/hacsfiles/advanced_trading_wallet/lovelace/portfolio-card.js"
+      },
+      {
+        "type": "module",
+        "url": "/hacsfiles/advanced_trading_wallet/lovelace/transaction-card.js"
+      },
+      {
+        "type": "module",
+        "url": "/hacsfiles/advanced_trading_wallet/lovelace/asset-summary-card.js"
+      }
+    ],
+    "version": "0.1.0"
+  }

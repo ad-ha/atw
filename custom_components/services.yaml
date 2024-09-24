@@ -1,0 +1,69 @@
+buy_stock:
+  name: "Buy Stock"
+  description: "Log a stock purchase in your portfolio."
+  fields:
+    stock_symbol:
+      name: "Stock Symbol"
+      description: "Enter the symbol of the stock (e.g., AAPL)."
+      required: true
+      example: "AAPL"
+    amount:
+      name: "Amount"
+      description: "Enter the number of shares bought."
+      required: true
+      example: 10
+    purchase_price:
+      name: "Purchase Price"
+      description: "Enter the purchase price per share."
+      required: true
+      example: 150.25
+
+sell_stock:
+  name: "Sell Stock"
+  description: "Log a stock sale in your portfolio."
+  fields:
+    stock_symbol:
+      name: "Stock Symbol"
+      description: "Enter the symbol of the stock (e.g., AAPL)."
+      required: true
+      example: "AAPL"
+    amount:
+      name: "Amount"
+      description: "Enter the number of shares sold."
+      required: true
+      example: 5
+
+buy_crypto:
+  name: "Buy Cryptocurrency"
+  description: "Log a cryptocurrency purchase in your portfolio."
+  fields:
+    crypto_symbol:
+      name: "Cryptocurrency Symbol"
+      description: "Enter the symbol of the cryptocurrency (e.g., bitcoin)."
+      required: true
+      example: "bitcoin"
+    amount:
+      name: "Amount"
+      description: "Enter the amount of cryptocurrency bought."
+      required: true
+      example: 0.5
+    purchase_price:
+      name: "Purchase Price"
+      description: "Enter the purchase price per unit of cryptocurrency."
+      required: true
+      example: 45000.0
+
+sell_crypto:
+  name: "Sell Cryptocurrency"
+  description: "Log a cryptocurrency sale in your portfolio."
+  fields:
+    crypto_symbol:
+      name: "Cryptocurrency Symbol"
+      description: "Enter the symbol of the cryptocurrency (e.g., bitcoin)."
+      required: true
+      example: "bitcoin"
+    amount:
+      name: "Amount"
+      description: "Enter the amount of cryptocurrency sold."
+      required: true
+      example: 0.25
