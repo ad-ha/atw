@@ -1,6 +1,5 @@
 {
     "title": "Advanced Trading Wallet",
-    "description": "Track your stock and cryptocurrency portfolio in Home Assistant.",
     "config": {
         "step": {
             "user": {

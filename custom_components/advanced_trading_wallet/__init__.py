@@ -1,6 +1,7 @@
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.typing import ConfigType
+import homeassistant.helpers.config_validation as cv
 from homeassistant.const import Platform
 from .const import (
     DOMAIN,
@@ -11,6 +12,8 @@ from .const import (
 )
 from .coordinator import ATWCoordinator
 from .services import async_setup_services, async_unload_services
+
+CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
 
 
 async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> bool:

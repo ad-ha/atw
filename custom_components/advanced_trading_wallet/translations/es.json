@@ -1,6 +1,5 @@
 {
     "title": "Cartera de Comercio Avanzada",
-    "description": "Haz un seguimiento de tu cartera de acciones y criptomonedas en Home Assistant.",
     "config": {
         "step": {
             "user": {
