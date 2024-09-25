@@ -60,7 +60,7 @@ class TransactionCard extends HTMLElement {
         // Create a toggle for Buy/Sell actions
         const buySellToggle = document.createElement('div');
         buySellToggle.innerHTML = `
-            <h1>Transaction Recorder</h1>
+            <h2>Transaction Recorder</h2>
             <label>Action:</label>
             <select id="action-select">
                 <option value="buy">Buy</option>

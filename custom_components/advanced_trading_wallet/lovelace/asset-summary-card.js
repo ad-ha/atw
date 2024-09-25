@@ -17,7 +17,7 @@ class AssetSummaryCard extends HTMLElement {
                     padding: 16px;
                     margin: 8px 0;
                 }
-                h1 {
+                h2 {
                     font-size: 1.5em;
                     margin-bottom: 16px;
                 }
@@ -31,9 +31,8 @@ class AssetSummaryCard extends HTMLElement {
                 .icon {
                     margin-right: 10px;
                 }
-                .value {
+                .atw-value {
                     text-align: right;
-                    font-weight: bold;
                 }
                 .positive {
                     color: var(--label-badge-green);
@@ -107,28 +106,28 @@ class AssetSummaryCard extends HTMLElement {
         const variationPercentFormatted = variationPercent.toFixed(2);
 
         this.content.innerHTML = `
-            <h1>${symbol.toUpperCase()} Summary</h1>
+            <h2>${symbol.toUpperCase()} Summary</h2>
             <div class="grid">
                 <div><ha-icon class="icon" icon="mdi:scale-balance"></ha-icon> Amount Owned</div>
-                <div class="value">${amountOwnedFormatted}</div>
+                <div class="atw-value">${amountOwnedFormatted}</div>
 
                 <div><ha-icon class="icon" icon="mdi:cash-plus"></ha-icon> Purchase Price</div>
-                <div class="value">$${purchasePriceFormatted}</div>
+                <div class="atw-value">$${purchasePriceFormatted}</div>
 
                 <div><ha-icon class="icon" icon="mdi:cash-multiple"></ha-icon> Current Price</div>
-                <div class="value">$${currentPriceFormatted}</div>
+                <div class="atw-value">$${currentPriceFormatted}</div>
 
                 <div><ha-icon class="icon" icon="mdi:wallet-plus"></ha-icon> Investment</div>
-                <div class="value">$${investmentFormatted}</div>
+                <div class="atw-value">$${investmentFormatted}</div>
 
                 <div><ha-icon class="icon" icon="mdi:wallet"></ha-icon> Current Value</div>
-                <div class="value">$${currentValueFormatted}</div>
+                <div class="atw-value">$${currentValueFormatted}</div>
 
                 <div><ha-icon class="icon" icon="${variationIcon}"></ha-icon> Variation</div>
-                <div class="value ${variationClass}">$${variationFormatted}</div>
+                <div class="atw-value ${variationClass}">$${variationFormatted}</div>
 
                 <div><ha-icon class="icon" icon="${variationPercentIcon}"></ha-icon> Variation %</div>
-                <div class="value ${variationPercentClass}">${variationPercentFormatted}%</div>
+                <div class="atw-value ${variationPercentClass}">${variationPercentFormatted}%</div>
             </div>
         `;
     }

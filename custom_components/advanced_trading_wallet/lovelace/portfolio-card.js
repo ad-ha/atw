@@ -17,7 +17,7 @@ class PortfolioCard extends HTMLElement {
                     padding: 16px;
                     margin: 8px 0;
                 }
-                h1 {
+                h2 {
                     font-size: 1.5em;
                     margin-bottom: 16px;
                 }
@@ -31,9 +31,8 @@ class PortfolioCard extends HTMLElement {
                 .icon {
                     margin-right: 10px;
                 }
-                .value {
+                .atw-value {
                     text-align: right;
-                    font-weight: bold;
                 }
             `;
             card.appendChild(style);
@@ -50,25 +49,25 @@ class PortfolioCard extends HTMLElement {
         const variationIcon = totalVariation >= 0 ? "mdi:trending-up" : "mdi:trending-down";
 
         this.content.innerHTML = `
-            <h1>Portfolio Summary</h1>
+            <h2>Portfolio Summary</h2>
             <div class="grid">
                 <div><ha-icon class="icon" icon="mdi:wallet-bifold-outline"></ha-icon> Total Investment</div>
-                <div class="value">$${parseFloat(totalInvestment).toFixed(2)}</div>
+                <div class="atw-value">$${parseFloat(totalInvestment).toFixed(2)}</div>
 
                 <div><ha-icon class="icon" icon="mdi:chart-line"></ha-icon> Total Portfolio Value</div>
-                <div class="value">$${parseFloat(totalValue).toFixed(2)}</div>
+                <div class="atw-value">$${parseFloat(totalValue).toFixed(2)}</div>
 
                 <div><ha-icon class="icon" icon="${variationIcon}"></ha-icon> Total Variation</div>
-                <div class="value">$${parseFloat(totalVariation).toFixed(2)}</div>
+                <div class="atw-value">$${parseFloat(totalVariation).toFixed(2)}</div>
 
                 <div><ha-icon class="icon" icon="${percentageChangeIcon}"></ha-icon> Percentage Change</div>
-                <div class="value">${parseFloat(percentageChange).toFixed(2)}%</div>
+                <div class="atw-value">${parseFloat(percentageChange).toFixed(2)}%</div>
 
                 <div><ha-icon class="icon" icon="mdi:currency-usd"></ha-icon> Total Stocks Value</div>
-                <div class="value">$${parseFloat(totalStocksValue).toFixed(2)}</div>
+                <div class="atw-value">$${parseFloat(totalStocksValue).toFixed(2)}</div>
 
                 <div><ha-icon class="icon" icon="mdi:currency-btc"></ha-icon> Total Crypto Value</div>
-                <div class="value">$${parseFloat(totalCryptoValue).toFixed(2)}</div>
+                <div class="atw-value">$${parseFloat(totalCryptoValue).toFixed(2)}</div>
             </div>
         `;
     }
