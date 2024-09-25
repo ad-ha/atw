@@ -67,3 +67,40 @@ sell_crypto:
       description: "Enter the amount of cryptocurrency sold."
       required: true
       example: 0.25
+
+refresh_data:
+  name: "Refresh Data"
+  description: "Manually refresh the data from the API provider."
+  fields:
+    # If your service does not require any fields, you can omit this section or leave it empty.
+    # If 'entry_id' is optional, include it here.
+    entry_id:
+      name: "Entry ID"
+      description: "Optional. The config entry ID to refresh. If not provided, all entries will be refreshed."
+      required: false
+      example: "your_entry_id_here"
+
+get_historical_data:
+  name: "Get Historical Data"
+  description: "Fetch historical data for a stock or cryptocurrency."
+  fields:
+    asset_symbol:
+      name: "Asset Symbol"
+      description: "Enter the symbol of the asset (e.g., AAPL for stock, bitcoin for crypto)."
+      required: true
+      example: "AAPL"
+    asset_type:
+      name: "Asset Type"
+      description: "Enter the type of the asset ('stock' or 'crypto')."
+      required: true
+      example: "stock"
+    interval:
+      name: "Interval"
+      description: "Optional. The time interval for historical data (e.g., '1d', '5d', '1wk', '1mo', '1y', '5y')."
+      required: false
+      example: "1mo"
+    entry_id:
+      name: "Entry ID"
+      description: "Optional. The config entry ID to use. If not provided, the first available entry will be used."
+      required: false
+      example: "your_entry_id_here"
