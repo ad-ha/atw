@@ -29,6 +29,9 @@ The Advanced Trading Wallet (ATW) integration brings your financial portfolio in
 - **Localization**: Support for multiple languages, including English and Spanish.
 - **Customizable Update Intervals**: Set how often the integration fetches data from API providers.
 
+- **Historical Data Import**: Available as a service, you may import historical data from each API for a specific asset. _(still under testing)_
+  
+
 ## Installation
 
 ### HACS (Recommended)
@@ -96,11 +99,21 @@ data:
   purchase_price: 150.25
 ```
 
+#### Sell Stock
 ```yaml
 service: advanced_trading_wallet.sell_crypto
 data:
   crypto_symbol: "bitcoin"
   amount: 0.5
+```
+
+#### Historical Data
+```yaml
+service: advanced_trading_wallet.gest_historical_data
+data:
+  crypto_symbol: AAPL
+  asset_type: stock
+  interval: 1mo
 ```
 
 ## Sensors and Entities
@@ -120,6 +133,8 @@ The integration creates various sensors to help you monitor your portfolio:
 * Purchase Price (sensor.{symbol}_purchase_price)
 
 ### Lovelace Cards
+**IMPORTANT NOTE: Lovelace cards will be moved into a specific frontend integration to ease the setup process. WIP**
+
 Enhance your Home Assistant dashboard with custom Lovelace cards designed for the Advanced Trading Wallet integration.
 
 Add the resources to your Lovelace configuration:
@@ -136,20 +151,26 @@ resources:
 
 Restart Home Assistant or reload the Lovelace resources.
 
-Usage
-Portfolio Summary Card
+
+#### Portfolio Summary Card
+
+![image](https://github.com/user-attachments/assets/47462fba-45fd-4f0e-872a-80c3a3cf8ab3)
 
 ```yaml
 type: 'custom:portfolio-card'
 ```
 
-Transaction Recorder Card
+#### Transaction Recorder Card
+
+![image](https://github.com/user-attachments/assets/7b1692d7-b69b-497d-ad1b-69190b3518c9)
 
 ```yaml
 type: 'custom:transaction-card'
 ```
 
-Asset Summary Card
+#### Asset Summary Card
+
+![image](https://github.com/user-attachments/assets/b3dc6d34-96a9-4e0b-8df9-22c81eda48c7)
 
 ```yaml
 type: 'custom:asset-summary-card'
