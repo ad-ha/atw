@@ -1,7 +1,15 @@
-# Advanced Trading Wallet for Home Assistant
-[![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://github.com/hacs/integration)
+[![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/hacs/custom_components)
+![GitHub Release (latest SemVer including pre-releases)](https://img.shields.io/github/v/release/ad-ha/atw?include_prereleases)
+![GitHub Downloads (all assets, latest release)](https://img.shields.io/github/downloads/ad-ha/atw/latest/total)
+
+[![HACS Action](https://github.com/ad-ha/atw/actions/workflows/validate.yaml/badge.svg)](https://github.com/ad-ha/atw/actions/workflows/validate.yaml)
+[![Hassfest](https://github.com/ad-ha/atw/actions/workflows/hassfest.yaml/badge.svg)](https://github.com/ad-ha/atw/actions/workflows/hassfest.yaml)
 
 ![logo-512](https://github.com/user-attachments/assets/489dda3f-d008-490b-88fe-331af026ad27)
+
+# Advanced Trading Wallet
+
+<a href="https://buymeacoffee.com/varetas3d" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>
 
 Track your stock and cryptocurrency portfolio directly in Home Assistant. The Advanced Trading Wallet integration allows you to monitor your investments, view real-time data, and perform virtual buy/sell transactions, all within your smart home ecosystem.
 
