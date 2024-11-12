@@ -42,12 +42,11 @@
     },
     "options": {
         "step": {
-            "user": {
+            "init": {
                 "title": "Ajustar Intervalo de Escaneo",
                 "description": "Establece con qué frecuencia deseas escanear actualizaciones de acciones y criptomonedas.",
                 "data": {
-                    "scan_interval": "Intervalo de Escaneo (minutos)",
-                    "charging_scan_interval": "Intervalo de Escaneo para Carga (minutos)"
+                    "update_interval": "Intervalo de Actualización (minutos)"
                 }
             }
         }

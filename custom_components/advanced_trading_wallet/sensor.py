@@ -1,167 +1,19 @@
-import datetime
+import locale
+import homeassistant.util.dt as dt_util
 from homeassistant.components.sensor import SensorEntity, SensorDeviceClass
 from homeassistant.helpers.restore_state import RestoreEntity
-from .const import DOMAIN, LOGGER, DEFAULT_API_PROVIDER
+from homeassistant.helpers.update_coordinator import CoordinatorEntity
+from .const import (
+    DOMAIN,
+    LOGGER,
+    DEFAULT_API_PROVIDER,
+    SENSOR_TYPES_STOCK,
+    SENSOR_TYPES_CRYPTO,
+)
+from .coordinator import ATWCoordinator
 
-# Configuration for the available stock sensors (Yahoo Finance)
-SENSOR_TYPES_STOCK = [
-    {
-        "name": "Stock Price",
-        "key": "regularMarketPrice",
-        "device_class": SensorDeviceClass.MONETARY,
-    },
-    {
-        "name": "Market Cap",
-        "key": "marketCap",
-        "device_class": SensorDeviceClass.MONETARY,
-    },
-    {
-        "name": "Day High",
-        "key": "regularMarketDayHigh",
-        "device_class": SensorDeviceClass.MONETARY,
-    },
-    {
-        "name": "Day Low",
-        "key": "regularMarketDayLow",
-        "device_class": SensorDeviceClass.MONETARY,
-    },
-    {
-        "name": "Post Market Price",
-        "key": "postMarketPrice",
-        "device_class": SensorDeviceClass.MONETARY,
-    },
-    {
-        "name": "Post Market Change",
-        "key": "postMarketChange",
-        "device_class": SensorDeviceClass.MONETARY,
-    },
-    {"name": "Bid", "key": "bid", "device_class": SensorDeviceClass.MONETARY},
-    {"name": "Ask", "key": "ask", "device_class": SensorDeviceClass.MONETARY},
-    {
-        "name": "52-Week High",
-        "key": "fiftyTwoWeekHigh",
-        "device_class": SensorDeviceClass.MONETARY,
-    },
-    {
-        "name": "52-Week Low",
-        "key": "fiftyTwoWeekLow",
-        "device_class": SensorDeviceClass.MONETARY,
-    },
-    {
-        "name": "Dividend Rate",
-        "key": "dividendRate",
-        "device_class": SensorDeviceClass.MONETARY,
-    },
-    {
-        "name": "Earnings Per Share (EPS)",
-        "key": "epsTrailingTwelveMonths",
-        "device_class": SensorDeviceClass.MONETARY,
-    },
-    {"name": "Price to Earnings (PE) Ratio", "key": "trailingPE", "device_class": None},
-    {"name": "Volume", "key": "regularMarketVolume", "device_class": None},
-    {
-        "name": "Average Volume (3M)",
-        "key": "averageDailyVolume3Month",
-        "device_class": None,
-    },
-    {
-        "name": "Average Volume (10D)",
-        "key": "averageDailyVolume10Day",
-        "device_class": None,
-        "unit": "Shares",
-    },
-    {"name": "Shares Outstanding", "key": "sharesOutstanding", "device_class": None},
-    {
-        "name": "Book Value",
-        "key": "bookValue",
-        "device_class": SensorDeviceClass.MONETARY,
-    },
-    {"name": "Market State", "key": "marketState", "device_class": None},
-    {"name": "Currency", "key": "currency", "device_class": None},
-    {"name": "Display Name", "key": "displayName", "device_class": None},
-    {"name": "Symbol", "key": "symbol", "device_class": None},
-    {"name": "Short Name", "key": "shortName", "device_class": None},
-    {
-        "name": "Average Analyst Rating",
-        "key": "averageAnalystRating",
-        "device_class": None,
-    },
-    {"name": "Bid Size", "key": "bidSize", "device_class": None, "unit": "Shares"},
-    {"name": "Ask Size", "key": "askSize", "device_class": None, "unit": "Shares"},
-    {
-        "name": "50-Day Average",
-        "key": "fiftyDayAverage",
-        "device_class": SensorDeviceClass.MONETARY,
-        "unit": "USD",
-    },
-    {
-        "name": "200-Day Average",
-        "key": "twoHundredDayAverage",
-        "device_class": SensorDeviceClass.MONETARY,
-        "unit": "USD",
-    },
-    {
-        "name": "Dividend Yield",
-        "key": "dividendYield",
-        "device_class": None,
-        "unit": "%",
-    },
-    {
-        "name": "Historical Stock Data",
-        "key": "historical_stock_data",
-        "device_class": None,
-    },
-]
-
-# Configuration for available crypto sensors (CoinGecko)
-SENSOR_TYPES_CRYPTO = [
-    {
-        "name": "Crypto Price",
-        "key": "current_price",
-        "device_class": SensorDeviceClass.MONETARY,
-    },
-    {
-        "name": "Market Cap",
-        "key": "market_cap",
-        "device_class": SensorDeviceClass.MONETARY,
-    },
-    {"name": "Market Cap Rank", "key": "market_cap_rank", "device_class": None},
-    {"name": "24h Volume", "key": "total_volume", "device_class": None},
-    {"name": "24h High", "key": "high_24h", "device_class": SensorDeviceClass.MONETARY},
-    {"name": "24h Low", "key": "low_24h", "device_class": SensorDeviceClass.MONETARY},
-    {
-        "name": "ATH (All Time High)",
-        "key": "ath",
-        "device_class": SensorDeviceClass.MONETARY,
-    },
-    {
-        "name": "ATL (All Time Low)",
-        "key": "atl",
-        "device_class": SensorDeviceClass.MONETARY,
-    },
-    {"name": "Circulating Supply", "key": "circulating_supply", "device_class": None},
-    {
-        "name": "Price Change (24h)",
-        "key": "price_change_percentage_24h",
-        "device_class": None,
-    },
-    {
-        "name": "Fully Diluted Valuation",
-        "key": "fully_diluted_valuation",
-        "device_class": SensorDeviceClass.MONETARY,
-    },
-    {
-        "name": "Market Cap Change 24h",
-        "key": "market_cap_change_24h",
-        "device_class": SensorDeviceClass.MONETARY,
-    },
-    {"name": "Total Supply", "key": "total_supply", "device_class": None},
-    {
-        "name": "Historical Crypto Data",
-        "key": "historical_crypto_data",
-        "device_class": None,
-    },
-]
+# Set the locale to the system's default
+locale.setlocale(locale.LC_ALL, "")
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
@@ -184,7 +36,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
                 ATWSensor(
                     coordinator,
                     stock_symbol,
-                    f"{stock_symbol} {sensor_type['name']}",
+                    sensor_type["name"],
                     sensor_type["key"],
                     sensor_type.get("device_class"),
                     coordinator.preferred_currency,
@@ -213,7 +65,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
                 ATWSensor(
                     coordinator,
                     crypto_symbol,
-                    f"{crypto_symbol} {sensor_type['name']}",
+                    sensor_type["name"],
                     sensor_type["key"],
                     sensor_type.get("device_class"),
                     coordinator.preferred_currency,
@@ -250,41 +102,41 @@ async def async_setup_entry(hass, entry, async_add_entities):
     await coordinator.async_request_refresh()
 
 
-class ATWSensor(SensorEntity, RestoreEntity):
+class ATWSensor(CoordinatorEntity, SensorEntity):
     """Generic sensor for stock/crypto data."""
 
     def __init__(
         self,
         coordinator,
         symbol,
-        name,
+        sensor_name,
         data_key,
         device_class=None,
         preferred_currency=None,
         api_provider=None,
     ):
         """Initialize the sensor."""
-        self.coordinator = coordinator
-        self._name = name
+        super().__init__(coordinator)
+        self._name = f"{symbol.upper()} {sensor_name}"
         self._symbol = symbol
+        self._sensor_name = sensor_name
         self._data_key = data_key
         self._device_class = device_class
-        self._preferred_currency = preferred_currency
+        self._preferred_currency = preferred_currency.upper()
         self._api_provider = api_provider
         self._state = None
         self._attr_device_class = device_class
+        self._last_updated = None
 
     @property
     def native_value(self):
         """Return the state of the sensor."""
-        if not self.coordinator.data:
-            LOGGER.warning(f"No data available for {self._symbol}")
-            return None
-
         data = self.coordinator.data.get(self._symbol)
         if not data:
-            LOGGER.warning(f"No data for symbol: {self._symbol}")
-            return None
+            LOGGER.warning(
+                f"No data for symbol: {self._symbol}, using last known value."
+            )
+            return self._state  # Return last known state
 
         if self._api_provider == "Yahoo Finance":
             data = data.get("quoteResponse", {}).get("result", [{}])[0]
@@ -292,14 +144,31 @@ class ATWSensor(SensorEntity, RestoreEntity):
             data = data[0] if isinstance(data, list) else data
         else:
             LOGGER.error(f"Unknown API provider for {self._symbol}")
-            return None
+            return self._state  # Return last known state
 
-        raw_value = data.get(self._data_key)
-        if isinstance(raw_value, (int, float)):
-            return raw_value
+        if self._data_key == "regularMarketPrice":
+            # Handle stock price based on market state
+            raw_value = self.get_stock_price(data)
+        else:
+            raw_value = data.get(self._data_key)
 
-        LOGGER.warning(f"Invalid data format for {self._symbol}: {raw_value}")
-        return raw_value
+        if raw_value is not None:
+            self._state = raw_value
+            self._last_updated = dt_util.utcnow()
+        else:
+            LOGGER.warning(f"No data for {self._symbol}: {self._data_key}")
+            # Do not update self._state if data is None
+
+        return self._state
+
+    def get_stock_price(self, data):
+        market_state = data.get("marketState")
+        if market_state in ["PRE", "PREPRE"] and "preMarketPrice" in data:
+            return data["preMarketPrice"]
+        elif market_state in ["POST", "POSTPOST"] and "postMarketPrice" in data:
+            return data["postMarketPrice"]
+        else:
+            return data.get("regularMarketPrice")
 
     @property
     def name(self):
@@ -317,14 +186,26 @@ class ATWSensor(SensorEntity, RestoreEntity):
         raw_value = self.native_value
 
         if isinstance(raw_value, (int, float)):
-            formatted_value = f"{raw_value:,.2f}"
+            # Determine the number of decimal places based on asset type and sensor type
+            if "amount" in self._name.lower():
+                decimal_places = 4
+            elif "crypto" in self._name.lower():
+                decimal_places = 8
+            elif "percentage" in self._name.lower():
+                decimal_places = 2
+            else:
+                decimal_places = 2
+            formatted_value = locale.format_string(
+                f"%.{decimal_places}f", raw_value, grouping=True
+            )
         else:
             formatted_value = raw_value
 
         return {
             "formatted_value": formatted_value,
-            "symbol": self._symbol,
+            "symbol": self._symbol.upper(),
             "api_provider": self._api_provider,
+            "last_updated": self._last_updated,
         }
 
     @property
@@ -332,30 +213,41 @@ class ATWSensor(SensorEntity, RestoreEntity):
         """Return the unit of measurement."""
         if self._device_class == SensorDeviceClass.MONETARY:
             return self._preferred_currency
-        return None
+        elif "percentage" in self._name.lower():
+            return "%"
+        else:
+            return None
 
     @property
     def device_info(self):
         """Return the device info."""
         return {
             "identifiers": {(DOMAIN, self._symbol)},
-            "name": f"Asset: {self._symbol}",
+            "name": f"Asset: {self._symbol.upper()}",
             "manufacturer": "Advanced Trading Wallet",
         }
 
-    async def async_update(self):
-        """Update the sensor."""
-        await self.coordinator.async_request_refresh()
+    @property
+    def available(self):
+        """Return True if sensor data is available."""
+        data = self.coordinator.data.get(self._symbol)
+        if not data:
+            return False
+        if self._api_provider == "Yahoo Finance":
+            data = data.get("quoteResponse", {}).get("result", [{}])[0]
+        elif self._api_provider == "CoinGecko":
+            data = data[0] if isinstance(data, list) else data
+        return self._data_key in data or self._data_key == "regularMarketPrice"
 
 
-class StockAmountSensor(SensorEntity, RestoreEntity):
+class StockAmountSensor(CoordinatorEntity, SensorEntity):
     """Sensor for stock total amount owned."""
 
     def __init__(self, coordinator, stock_symbol, entry_data, config_entry_id):
         """Initialize the sensor."""
-        self.coordinator = coordinator
+        super().__init__(coordinator)
         self._stock_symbol = stock_symbol
-        self._name = f"{stock_symbol} Total Amount"
+        self._name = f"{stock_symbol.upper()} Total Amount"
         self._state = None
         self.entry_data = entry_data
         self.config_entry_id = config_entry_id
@@ -366,7 +258,7 @@ class StockAmountSensor(SensorEntity, RestoreEntity):
         return self._name
 
     @property
-    def state(self):
+    def native_value(self):
         """Return the current state."""
         # Access per-entry amount owned
         self._state = self.entry_data.get("stock_amount_owned", 0)
@@ -378,6 +270,16 @@ class StockAmountSensor(SensorEntity, RestoreEntity):
         return f"{self._stock_symbol}_{self.config_entry_id}_total_amount"
 
     @property
+    def extra_state_attributes(self):
+        """Return extra state attributes, including formatted value."""
+        raw_value = self.native_value
+        formatted_value = locale.format_string("%.4f", raw_value, grouping=True)
+        return {
+            "formatted_value": formatted_value,
+            "symbol": self._stock_symbol.upper(),
+        }
+
+    @property
     def device_info(self):
         """Return the device info for the Portfolio."""
         return {
@@ -387,17 +289,18 @@ class StockAmountSensor(SensorEntity, RestoreEntity):
         }
 
 
-class StockPurchasePriceSensor(SensorEntity, RestoreEntity):
+class StockPurchasePriceSensor(CoordinatorEntity, SensorEntity):
     """Sensor for stock purchase price."""
 
     def __init__(self, coordinator, stock_symbol, entry_data, config_entry_id):
         """Initialize the sensor."""
-        self.coordinator = coordinator
+        super().__init__(coordinator)
         self._stock_symbol = stock_symbol
-        self._name = f"{stock_symbol} Purchase Price"
+        self._name = f"{stock_symbol.upper()} Purchase Price"
         self._state = None
         self.entry_data = entry_data
         self.config_entry_id = config_entry_id
+        self._preferred_currency = coordinator.preferred_currency
 
     @property
     def name(self):
@@ -405,10 +308,15 @@ class StockPurchasePriceSensor(SensorEntity, RestoreEntity):
         return self._name
 
     @property
-    def state(self):
+    def native_value(self):
         """Return the current state."""
         self._state = self.entry_data.get("stock_purchase_price", 0)
         return self._state
+
+    @property
+    def native_unit_of_measurement(self):
+        """Return the unit of measurement."""
+        return self._preferred_currency
 
     @property
     def unique_id(self):
@@ -416,6 +324,16 @@ class StockPurchasePriceSensor(SensorEntity, RestoreEntity):
         return f"{self._stock_symbol}_{self.config_entry_id}_purchase_price"
 
     @property
+    def extra_state_attributes(self):
+        """Return extra state attributes, including formatted value."""
+        raw_value = self.native_value
+        formatted_value = locale.format_string("%.2f", raw_value, grouping=True)
+        return {
+            "formatted_value": formatted_value,
+            "symbol": self._stock_symbol.upper(),
+        }
+
+    @property
     def device_info(self):
         """Return the device info for the Portfolio."""
         return {
@@ -425,14 +343,14 @@ class StockPurchasePriceSensor(SensorEntity, RestoreEntity):
         }
 
 
-class CryptoAmountSensor(SensorEntity, RestoreEntity):
+class CryptoAmountSensor(CoordinatorEntity, SensorEntity):
     """Sensor for crypto total amount owned."""
 
     def __init__(self, coordinator, crypto_symbol, entry_data, config_entry_id):
         """Initialize the sensor."""
-        self.coordinator = coordinator
+        super().__init__(coordinator)
         self._crypto_symbol = crypto_symbol
-        self._name = f"{crypto_symbol} Total Amount"
+        self._name = f"{crypto_symbol.upper()} Total Amount"
         self._state = None
         self.entry_data = entry_data
         self.config_entry_id = config_entry_id
@@ -443,7 +361,7 @@ class CryptoAmountSensor(SensorEntity, RestoreEntity):
         return self._name
 
     @property
-    def state(self):
+    def native_value(self):
         """Return the current state."""
         self._state = self.entry_data.get("crypto_amount_owned", 0)
         return self._state
@@ -454,6 +372,16 @@ class CryptoAmountSensor(SensorEntity, RestoreEntity):
         return f"{self._crypto_symbol}_{self.config_entry_id}_total_amount"
 
     @property
+    def extra_state_attributes(self):
+        """Return extra state attributes, including formatted value."""
+        raw_value = self.native_value
+        formatted_value = locale.format_string("%.4f", raw_value, grouping=True)
+        return {
+            "formatted_value": formatted_value,
+            "symbol": self._crypto_symbol.upper(),
+        }
+
+    @property
     def device_info(self):
         """Return the device info for the Portfolio."""
         return {
@@ -463,17 +391,18 @@ class CryptoAmountSensor(SensorEntity, RestoreEntity):
         }
 
 
-class CryptoPurchasePriceSensor(SensorEntity, RestoreEntity):
+class CryptoPurchasePriceSensor(CoordinatorEntity, SensorEntity):
     """Sensor for crypto purchase price."""
 
     def __init__(self, coordinator, crypto_symbol, entry_data, config_entry_id):
         """Initialize the sensor."""
-        self.coordinator = coordinator
+        super().__init__(coordinator)
         self._crypto_symbol = crypto_symbol
-        self._name = f"{crypto_symbol} Purchase Price"
+        self._name = f"{crypto_symbol.upper()} Purchase Price"
         self._state = None
         self.entry_data = entry_data
         self.config_entry_id = config_entry_id
+        self._preferred_currency = coordinator.preferred_currency
 
     @property
     def name(self):
@@ -481,10 +410,15 @@ class CryptoPurchasePriceSensor(SensorEntity, RestoreEntity):
         return self._name
 
     @property
-    def state(self):
+    def native_value(self):
         """Return the current state."""
         self._state = self.entry_data.get("crypto_purchase_price", 0)
         return self._state
+
+    @property
+    def native_unit_of_measurement(self):
+        """Return the unit of measurement."""
+        return self._preferred_currency
 
     @property
     def unique_id(self):
@@ -492,6 +426,16 @@ class CryptoPurchasePriceSensor(SensorEntity, RestoreEntity):
         return f"{self._crypto_symbol}_{self.config_entry_id}_purchase_price"
 
     @property
+    def extra_state_attributes(self):
+        """Return extra state attributes, including formatted value."""
+        raw_value = self.native_value
+        formatted_value = locale.format_string("%.8f", raw_value, grouping=True)
+        return {
+            "formatted_value": formatted_value,
+            "symbol": self._crypto_symbol.upper(),
+        }
+
+    @property
     def device_info(self):
         """Return the device info for the Portfolio."""
         return {
@@ -501,15 +445,16 @@ class CryptoPurchasePriceSensor(SensorEntity, RestoreEntity):
         }
 
 
-class TotalPortfolioValueSensor(SensorEntity, RestoreEntity):
+class TotalPortfolioValueSensor(CoordinatorEntity, SensorEntity):
     """Sensor to track the total value of stocks and crypto in the portfolio."""
 
     def __init__(self, hass, coordinator):
         """Initialize the sensor."""
         self.hass = hass
-        self.coordinator = coordinator
+        super().__init__(coordinator)
         self._name = "Total Portfolio Value"
         self._state = None
+        self._preferred_currency = coordinator.preferred_currency
 
     @property
     def name(self):
@@ -517,69 +462,23 @@ class TotalPortfolioValueSensor(SensorEntity, RestoreEntity):
         return self._name
 
     @property
-    def state(self):
+    def native_value(self):
         """Return the current state."""
-        total_value = 0
-
-        # Fetch per-entry data from hass.data
-        for entry_id, entry_data in self.hass.data[DOMAIN].items():
-            if entry_id in ("coordinator", "portfolio_sensors_created"):
-                continue
-            if not isinstance(entry_data, dict):
-                LOGGER.warning(
-                    f"Unexpected data type for entry_id '{entry_id}': {type(entry_data)}"
-                )
-                continue
-            # Calculate stock values
-            stock_amount_owned = entry_data.get("stock_amount_owned", 0)
-            for stock_symbol in entry_data.get("stocks_to_track", "").split(","):
-                stock_symbol = stock_symbol.strip()
-                if not stock_symbol:
-                    continue
-
-                # Generate the correct entity ID
-                entity_id = f"sensor.{stock_symbol.replace('-', '_')}_stock_price"
-
-                stock_price_sensor = self.hass.states.get(entity_id)
-
-                if stock_price_sensor and stock_price_sensor.state not in (
-                    None,
-                    "unknown",
-                ):
-                    try:
-                        stock_price = float(stock_price_sensor.state)
-                        total_value += stock_price * stock_amount_owned
-                    except ValueError as e:
-                        LOGGER.warning(
-                            f"Error converting values for {stock_symbol}: {e}"
-                        )
-
-            # Calculate crypto values
-            crypto_amount_owned = entry_data.get("crypto_amount_owned", 0)
-            for crypto_symbol in entry_data.get("crypto_to_track", "").split(","):
-                crypto_symbol = crypto_symbol.strip()
-                if not crypto_symbol:
-                    continue
-
-                # Generate the correct entity ID
-                entity_id = f"sensor.{crypto_symbol.replace('-', '_')}_crypto_price"
-
-                crypto_price_sensor = self.hass.states.get(entity_id)
-
-                if crypto_price_sensor and crypto_price_sensor.state not in (
-                    None,
-                    "unknown",
-                ):
-                    try:
-                        crypto_price = float(crypto_price_sensor.state)
-                        total_value += crypto_price * crypto_amount_owned
-                    except ValueError as e:
-                        LOGGER.warning(
-                            f"Error converting values for {crypto_symbol}: {e}"
-                        )
-
-        self._state = total_value
+        self._state = self.coordinator.calculate_total_value()
         return self._state
+
+    @property
+    def native_unit_of_measurement(self):
+        """Return the unit of measurement."""
+        return self._preferred_currency
+
+    @property
+    def extra_state_attributes(self):
+        """Return extra state attributes, including formatted value."""
+        formatted_value = locale.format_string("%.2f", self._state, grouping=True)
+        return {
+            "formatted_value": formatted_value,
+        }
 
     @property
     def unique_id(self):
@@ -596,15 +495,16 @@ class TotalPortfolioValueSensor(SensorEntity, RestoreEntity):
         }
 
 
-class TotalStocksValueSensor(SensorEntity, RestoreEntity):
+class TotalStocksValueSensor(CoordinatorEntity, SensorEntity):
     """Sensor to track the total value of stocks in the portfolio."""
 
     def __init__(self, hass, coordinator):
         """Initialize the sensor."""
         self.hass = hass
-        self.coordinator = coordinator
+        super().__init__(coordinator)
         self._name = "Total Stocks Value"
         self._state = None
+        self._preferred_currency = coordinator.preferred_currency
 
     @property
     def name(self):
@@ -612,45 +512,49 @@ class TotalStocksValueSensor(SensorEntity, RestoreEntity):
         return self._name
 
     @property
-    def state(self):
+    def native_value(self):
         """Return the current state."""
         total_stocks_value = 0
-
-        # Fetch per-entry data from hass.data
+        # Iterate over all entries to calculate stock values
         for entry_id, entry_data in self.hass.data[DOMAIN].items():
             if entry_id in ("coordinator", "portfolio_sensors_created"):
                 continue
             if not isinstance(entry_data, dict):
-                LOGGER.warning(
-                    f"Unexpected data type for entry_id '{entry_id}': {type(entry_data)}"
-                )
                 continue
-            # Calculate stock values
             stock_amount_owned = entry_data.get("stock_amount_owned", 0)
             for stock_symbol in entry_data.get("stocks_to_track", "").split(","):
                 stock_symbol = stock_symbol.strip()
                 if not stock_symbol:
                     continue
-
-                # Generate the correct entity ID
-                entity_id = f"sensor.{stock_symbol.replace('-', '_')}_stock_price"
-
-                stock_price_sensor = self.hass.states.get(entity_id)
-
-                if stock_price_sensor and stock_price_sensor.state not in (
-                    None,
-                    "unknown",
-                ):
-                    try:
-                        stock_price = float(stock_price_sensor.state)
+                # Fetch stock price from coordinator data
+                stock_data = self.coordinator.data.get(stock_symbol)
+                if stock_data and "quoteResponse" in stock_data:
+                    stock_info = stock_data["quoteResponse"]["result"][0]
+                    stock_price = stock_info.get("regularMarketPrice")
+                    if stock_price is None:
+                        # Handle pre/post market prices
+                        market_state = stock_info.get("marketState")
+                        if market_state in ["PRE", "PREPRE"]:
+                            stock_price = stock_info.get("preMarketPrice")
+                        elif market_state in ["POST", "POSTPOST"]:
+                            stock_price = stock_info.get("postMarketPrice")
+                    if stock_price is not None:
                         total_stocks_value += stock_price * stock_amount_owned
-                    except ValueError as e:
-                        LOGGER.warning(
-                            f"Error converting values for {stock_symbol}: {e}"
-                        )
-
         self._state = total_stocks_value
         return self._state
+
+    @property
+    def native_unit_of_measurement(self):
+        """Return the unit of measurement."""
+        return self._preferred_currency
+
+    @property
+    def extra_state_attributes(self):
+        """Return extra state attributes, including formatted value."""
+        formatted_value = locale.format_string("%.2f", self._state, grouping=True)
+        return {
+            "formatted_value": formatted_value,
+        }
 
     @property
     def unique_id(self):
@@ -667,15 +571,16 @@ class TotalStocksValueSensor(SensorEntity, RestoreEntity):
         }
 
 
-class TotalCryptoValueSensor(SensorEntity, RestoreEntity):
+class TotalCryptoValueSensor(CoordinatorEntity, SensorEntity):
     """Sensor to track the total value of crypto in the portfolio."""
 
     def __init__(self, hass, coordinator):
         """Initialize the sensor."""
         self.hass = hass
-        self.coordinator = coordinator
+        super().__init__(coordinator)
         self._name = "Total Crypto Value"
         self._state = None
+        self._preferred_currency = coordinator.preferred_currency
 
     @property
     def name(self):
@@ -683,45 +588,44 @@ class TotalCryptoValueSensor(SensorEntity, RestoreEntity):
         return self._name
 
     @property
-    def state(self):
+    def native_value(self):
         """Return the current state."""
         total_crypto_value = 0
-
-        # Fetch per-entry data from hass.data
+        # Iterate over all entries to calculate crypto values
         for entry_id, entry_data in self.hass.data[DOMAIN].items():
             if entry_id in ("coordinator", "portfolio_sensors_created"):
                 continue
             if not isinstance(entry_data, dict):
-                LOGGER.warning(
-                    f"Unexpected data type for entry_id '{entry_id}': {type(entry_data)}"
-                )
                 continue
-            # Calculate crypto values
             crypto_amount_owned = entry_data.get("crypto_amount_owned", 0)
             for crypto_symbol in entry_data.get("crypto_to_track", "").split(","):
                 crypto_symbol = crypto_symbol.strip()
                 if not crypto_symbol:
                     continue
-
-                # Generate the correct entity ID
-                entity_id = f"sensor.{crypto_symbol.replace('-', '_')}_crypto_price"
-
-                crypto_price_sensor = self.hass.states.get(entity_id)
-
-                if crypto_price_sensor and crypto_price_sensor.state not in (
-                    None,
-                    "unknown",
-                ):
-                    try:
-                        crypto_price = float(crypto_price_sensor.state)
+                # Fetch crypto price from coordinator data
+                crypto_data = self.coordinator.data.get(crypto_symbol)
+                if crypto_data:
+                    crypto_info = (
+                        crypto_data[0] if isinstance(crypto_data, list) else crypto_data
+                    )
+                    crypto_price = crypto_info.get("current_price")
+                    if crypto_price is not None:
                         total_crypto_value += crypto_price * crypto_amount_owned
-                    except ValueError as e:
-                        LOGGER.warning(
-                            f"Error converting values for {crypto_symbol}: {e}"
-                        )
-
         self._state = total_crypto_value
         return self._state
+
+    @property
+    def native_unit_of_measurement(self):
+        """Return the unit of measurement."""
+        return self._preferred_currency
+
+    @property
+    def extra_state_attributes(self):
+        """Return extra state attributes, including formatted value."""
+        formatted_value = locale.format_string("%.2f", self._state, grouping=True)
+        return {
+            "formatted_value": formatted_value,
+        }
 
     @property
     def unique_id(self):
@@ -738,15 +642,16 @@ class TotalCryptoValueSensor(SensorEntity, RestoreEntity):
         }
 
 
-class TotalInvestmentSensor(SensorEntity, RestoreEntity):
+class TotalInvestmentSensor(CoordinatorEntity, SensorEntity):
     """Sensor to track the total investment value (stocks and crypto) in the portfolio."""
 
     def __init__(self, hass, coordinator):
         """Initialize the sensor."""
         self.hass = hass
-        self.coordinator = coordinator
+        super().__init__(coordinator)
         self._name = "Total Investment"
         self._state = None
+        self._preferred_currency = coordinator.preferred_currency
 
     @property
     def name(self):
@@ -754,31 +659,23 @@ class TotalInvestmentSensor(SensorEntity, RestoreEntity):
         return self._name
 
     @property
-    def state(self):
+    def native_value(self):
         """Return the current state."""
-        total_investment = 0
-
-        # Iterate over all entries
-        for entry_id, entry_data in self.hass.data[DOMAIN].items():
-            if entry_id in ("coordinator", "portfolio_sensors_created"):
-                continue
-            if not isinstance(entry_data, dict):
-                LOGGER.warning(
-                    f"Unexpected data type for entry_id '{entry_id}': {type(entry_data)}"
-                )
-                continue
-            # Sum the total investment for stocks
-            stock_amount_owned = entry_data.get("stock_amount_owned", 0)
-            stock_purchase_price = entry_data.get("stock_purchase_price", 0)
-            total_investment += stock_amount_owned * stock_purchase_price
-
-            # Sum the total investment for cryptos
-            crypto_amount_owned = entry_data.get("crypto_amount_owned", 0)
-            crypto_purchase_price = entry_data.get("crypto_purchase_price", 0)
-            total_investment += crypto_amount_owned * crypto_purchase_price
-
-        self._state = total_investment
+        self._state = self.coordinator.calculate_total_investment()
         return self._state
+
+    @property
+    def native_unit_of_measurement(self):
+        """Return the unit of measurement."""
+        return self._preferred_currency
+
+    @property
+    def extra_state_attributes(self):
+        """Return extra state attributes, including formatted value."""
+        formatted_value = locale.format_string("%.2f", self._state, grouping=True)
+        return {
+            "formatted_value": formatted_value,
+        }
 
     @property
     def unique_id(self):
@@ -795,13 +692,13 @@ class TotalInvestmentSensor(SensorEntity, RestoreEntity):
         }
 
 
-class PercentageChangeSensor(SensorEntity, RestoreEntity):
+class PercentageChangeSensor(CoordinatorEntity, SensorEntity):
     """Sensor to track the percentage change in the portfolio value."""
 
     def __init__(self, hass, coordinator):
         """Initialize the sensor."""
         self.hass = hass
-        self.coordinator = coordinator
+        super().__init__(coordinator)
         self._name = "Percentage Change"
         self._state = None
 
@@ -811,82 +708,23 @@ class PercentageChangeSensor(SensorEntity, RestoreEntity):
         return self._name
 
     @property
-    def state(self):
+    def native_value(self):
         """Return the current state."""
-        total_investment = 0
-        total_value = 0
-
-        # Iterate over all entries
-        for entry_id, entry_data in self.hass.data[DOMAIN].items():
-            if entry_id in ("coordinator", "portfolio_sensors_created"):
-                continue
-            if not isinstance(entry_data, dict):
-                LOGGER.warning(
-                    f"Unexpected data type for entry_id '{entry_id}': {type(entry_data)}"
-                )
-                continue
-            # Sum the total investment for stocks
-            stock_amount_owned = entry_data.get("stock_amount_owned", 0)
-            stock_purchase_price = entry_data.get("stock_purchase_price", 0)
-            total_investment += stock_amount_owned * stock_purchase_price
-
-            # Sum the total investment for cryptos
-            crypto_amount_owned = entry_data.get("crypto_amount_owned", 0)
-            crypto_purchase_price = entry_data.get("crypto_purchase_price", 0)
-            total_investment += crypto_amount_owned * crypto_purchase_price
-
-            # Calculate stock values
-            for stock_symbol in entry_data.get("stocks_to_track", "").split(","):
-                stock_symbol = stock_symbol.strip()
-                if not stock_symbol:
-                    continue
-
-                # Generate the correct entity ID
-                entity_id = f"sensor.{stock_symbol.replace('-', '_')}_stock_price"
-
-                stock_price_sensor = self.hass.states.get(entity_id)
-
-                if stock_price_sensor and stock_price_sensor.state not in (
-                    None,
-                    "unknown",
-                ):
-                    try:
-                        stock_price = float(stock_price_sensor.state)
-                        total_value += stock_price * stock_amount_owned
-                    except ValueError as e:
-                        LOGGER.warning(
-                            f"Error converting values for {stock_symbol}: {e}"
-                        )
-
-            # Calculate crypto values
-            for crypto_symbol in entry_data.get("crypto_to_track", "").split(","):
-                crypto_symbol = crypto_symbol.strip()
-                if not crypto_symbol:
-                    continue
-
-                # Generate the correct entity ID
-                entity_id = f"sensor.{crypto_symbol.replace('-', '_')}_crypto_price"
-
-                crypto_price_sensor = self.hass.states.get(entity_id)
-
-                if crypto_price_sensor and crypto_price_sensor.state not in (
-                    None,
-                    "unknown",
-                ):
-                    try:
-                        crypto_price = float(crypto_price_sensor.state)
-                        total_value += crypto_price * crypto_amount_owned
-                    except ValueError as e:
-                        LOGGER.warning(
-                            f"Error converting values for {crypto_symbol}: {e}"
-                        )
-
-        if total_investment == 0:
-            self._state = 0  # Avoid division by zero
-        else:
-            self._state = ((total_value - total_investment) / total_investment) * 100
-
+        self._state = self.coordinator.calculate_percentage_change()
         return self._state
+
+    @property
+    def native_unit_of_measurement(self):
+        """Return the unit of measurement."""
+        return "%"
+
+    @property
+    def extra_state_attributes(self):
+        """Return extra state attributes, including formatted value."""
+        formatted_value = locale.format_string("%.2f", self._state, grouping=True)
+        return {
+            "formatted_value": formatted_value,
+        }
 
     @property
     def unique_id(self):
@@ -903,15 +741,16 @@ class PercentageChangeSensor(SensorEntity, RestoreEntity):
         }
 
 
-class TotalVariationSensor(SensorEntity, RestoreEntity):
+class TotalVariationSensor(CoordinatorEntity, SensorEntity):
     """Sensor to track the total variation (increase/decrease) in portfolio value."""
 
     def __init__(self, hass, coordinator):
         """Initialize the sensor."""
         self.hass = hass
-        self.coordinator = coordinator
+        super().__init__(coordinator)
         self._name = "Total Variation"
         self._state = None
+        self._preferred_currency = coordinator.preferred_currency
 
     @property
     def name(self):
@@ -919,78 +758,23 @@ class TotalVariationSensor(SensorEntity, RestoreEntity):
         return self._name
 
     @property
-    def state(self):
+    def native_value(self):
         """Return the current state."""
-        total_investment = 0
-        total_value = 0
-
-        # Iterate over all entries
-        for entry_id, entry_data in self.hass.data[DOMAIN].items():
-            if entry_id in ("coordinator", "portfolio_sensors_created"):
-                continue
-            if not isinstance(entry_data, dict):
-                LOGGER.warning(
-                    f"Unexpected data type for entry_id '{entry_id}': {type(entry_data)}"
-                )
-                continue
-            # Sum the total investment for stocks
-            stock_amount_owned = entry_data.get("stock_amount_owned", 0)
-            stock_purchase_price = entry_data.get("stock_purchase_price", 0)
-            total_investment += stock_amount_owned * stock_purchase_price
-
-            # Sum the total investment for cryptos
-            crypto_amount_owned = entry_data.get("crypto_amount_owned", 0)
-            crypto_purchase_price = entry_data.get("crypto_purchase_price", 0)
-            total_investment += crypto_amount_owned * crypto_purchase_price
-
-            # Calculate stock values
-            for stock_symbol in entry_data.get("stocks_to_track", "").split(","):
-                stock_symbol = stock_symbol.strip()
-                if not stock_symbol:
-                    continue
-
-                # Generate the correct entity ID
-                entity_id = f"sensor.{stock_symbol.replace('-', '_')}_stock_price"
-
-                stock_price_sensor = self.hass.states.get(entity_id)
-
-                if stock_price_sensor and stock_price_sensor.state not in (
-                    None,
-                    "unknown",
-                ):
-                    try:
-                        stock_price = float(stock_price_sensor.state)
-                        total_value += stock_price * stock_amount_owned
-                    except ValueError as e:
-                        LOGGER.warning(
-                            f"Error converting values for {stock_symbol}: {e}"
-                        )
-
-            # Calculate crypto values
-            for crypto_symbol in entry_data.get("crypto_to_track", "").split(","):
-                crypto_symbol = crypto_symbol.strip()
-                if not crypto_symbol:
-                    continue
-
-                # Generate the correct entity ID
-                entity_id = f"sensor.{crypto_symbol.replace('-', '_')}_crypto_price"
-
-                crypto_price_sensor = self.hass.states.get(entity_id)
-
-                if crypto_price_sensor and crypto_price_sensor.state not in (
-                    None,
-                    "unknown",
-                ):
-                    try:
-                        crypto_price = float(crypto_price_sensor.state)
-                        total_value += crypto_price * crypto_amount_owned
-                    except ValueError as e:
-                        LOGGER.warning(
-                            f"Error converting values for {crypto_symbol}: {e}"
-                        )
-
-        self._state = total_value - total_investment
+        self._state = self.coordinator.calculate_total_variation()
         return self._state
+
+    @property
+    def native_unit_of_measurement(self):
+        """Return the unit of measurement."""
+        return self._preferred_currency
+
+    @property
+    def extra_state_attributes(self):
+        """Return extra state attributes, including formatted value."""
+        formatted_value = locale.format_string("%.2f", self._state, grouping=True)
+        return {
+            "formatted_value": formatted_value,
+        }
 
     @property
     def unique_id(self):
