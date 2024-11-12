@@ -190,6 +190,14 @@ Contributions are welcome! If you have suggestions, encounter issues, or wish to
 
 ## Changelog
 ```
+0.1.2
+* Fix sensor updating intervals
+* Refactor Coordinator and Sensors Deployement
+* Fix additional transactions not being kept after restart
+* Fix translation files
+```
+
+```
 0.1.0
 * Initial release of the Advanced Trading Wallet integration.
 * Support for tracking stocks and cryptocurrencies.
