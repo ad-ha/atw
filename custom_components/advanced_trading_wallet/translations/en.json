@@ -42,12 +42,11 @@
     },
     "options": {
         "step": {
-            "user": {
+            "init": {
                 "title": "Adjust Scan Interval",
                 "description": "Set how often you want to scan for stock and cryptocurrency updates.",
                 "data": {
-                    "scan_interval": "Scan Interval (minutes)",
-                    "charging_scan_interval": "Charging Scan Interval (minutes)"
+                    "update_interval": "Update Interval (minutes)"
                 }
             }
         }
