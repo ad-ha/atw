@@ -137,15 +137,17 @@ The integration creates various sensors to help you monitor your portfolio:
 
 Enhance your Home Assistant dashboard with custom Lovelace cards designed for the Advanced Trading Wallet integration.
 
-Add the resources to your Lovelace configuration:
+Copy the files in lovelace folder to `/www/atw/`
+
+Once done, add these files to your dashboard resources:
 
 ```yaml
 resources:
-  - url: /hacsfiles/advanced_trading_wallet/lovelace/portfolio-card.js
+  - url: /www/atw/portfolio-card.js
     type: module
-  - url: /hacsfiles/advanced_trading_wallet/lovelace/transaction-card.js
+  - url: /www/atw/transaction-card.js
     type: module
-  - url: /hacsfiles/advanced_trading_wallet/lovelace/asset-summary-card.js
+  - url: /www/atw/asset-summary-card.js
     type: module
 ```
 
