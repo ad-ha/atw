@@ -1,0 +1,120 @@
+{
+    "title": "Advanced Trading Wallet",
+    "config": {
+        "step": {
+            "user": {
+                "title": "Configurez votre portefeuille d'échange",
+                "description": "Sélectionnez le fournisseur d'API et définissez éventuellement votre crypto-monnaie préférée.",
+                "data": {
+                    "api_provider": "Fournisseur API",
+                    "preferred_currency": "Monnaie préféré (par défaut : USD)"
+                }
+            },
+            "select_asset_type": {
+                "title": "Choisissez le type d'actif",
+                "description": "Sélectionnez si vous souhaitez suivre des actions ou des crypto-monnaies..",
+                "data": {
+                    "asset_type": "type d'actions"
+                }
+            },
+            "select_stock": {
+                "title": "Stock d'action",
+                "description": "Saisissez les détails de l'action que vous souhaitez suivre.",
+                "data": {
+                    "stocks_to_track": "Symbole de l'action (e.g., AAPL, TSLA)",
+                    "stock_amount_owned": "Montant possédé",
+                    "stock_purchase_price": "Prix d'achat"
+                }
+            },
+            "select_crypto": {
+                "title": "Stock Crypto-monnaie",
+                "description": "Saisissez les détails de la crypto-monnaie que vous souhaitez suivre.",
+                "data": {
+                    "crypto_to_track": "Symbole de la crypto-monnaie (e.g., bitcoin, ethereum)",
+                    "crypto_amount_owned": "Montant possédé",
+                    "crypto_purchase_price": "Prix d'acha"
+                }
+            }
+        },
+        "error": {
+            "asset_type_missing": "Choisisser un type d'actif."
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "title": "Régler l'intervalle de scan",
+                "description": "Définissez la fréquence à laquelle vous souhaitez être informé des mises à jour concernant les actions et les crypto-monnaies..",
+                "data": {
+                    "update_interval": "Intervalle de mise à jour (minutes)"
+                }
+            }
+        }
+    },
+    "services": {
+        "buy_stock": {
+            "name": "Acheter des actions",
+            "description": "Enregistrer un achat d'actions dans votre portefeuille.",
+            "fields": {
+                "stock_symbol": {
+                    "name": "Symbole boursier de l'action",
+                    "description": "Saisir le symbole de l'action (e.g., AAPL)."
+                },
+                "amount": {
+                    "name": "Nombre d'actions",
+                    "description": "Indiquer le nombre d'actions achetées."
+                },
+                "purchase_price": {
+                    "name": "Montant",
+                    "description": "Indiquer le prix d'achat par action."
+                }
+            }
+        },
+        "sell_stock": {
+            "name": "Vendre des actions",
+            "description": "Enregistrer une vente d'actions dans votre portefeuille.",
+            "fields": {
+                "stock_symbol": {
+                    "name": "Symbole boursier de l'action",
+                    "description": "Saisir le symbole de l'action (e.g., AAPL)."
+                },
+                "amount": {
+                    "name": "Montant",
+                    "description": "Indiquer le nombre d'actions vendues."
+                }
+            }
+        },
+        "buy_crypto": {
+            "name": "Acheter des crypto-monnaies",
+            "description": "Enregistrer un achat de crypto-monnaie dans votre portefeuille.",
+            "fields": {
+                "crypto_symbol": {
+                    "name": "Symbole des crypto-monnaies",
+                    "description": "Saisissez le symbole de la crypto-monnaie (e.g., bitcoin)."
+                },
+                "amount": {
+                    "name": "Montant",
+                    "description": "Saisir le montant de la crypto-monnaie achetée."
+                },
+                "purchase_price": {
+                    "name": "Prix d'achat",
+                    "description": "Saisir le prix d'achat par pièce de crypto-monnaie."
+                }
+            }
+        },
+        "sell_crypto": {
+            "name": "Vendre des crypto-monnaies",
+            "description": "Enregistrez une vente de crypto-monnaie dans votre portefeuille.",
+            "fields": {
+                "crypto_symbol": {
+                    "name": "Symbole des crypto-monnaies",
+                    "description": "Saisissez le symbole de la crypto-monnaie (e.g., bitcoin)."
+                },
+                "amount": {
+                    "name": "Montant",
+                    "description": "Saisir le montant de la crypto-monnaie vendue."
+                }
+            }
+        }
+    }
+}
